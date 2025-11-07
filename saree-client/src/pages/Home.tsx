@@ -3,6 +3,8 @@ import HeroCarousel from '../compoenents/HeroCarousel';
 import About from '../compoenents/About';
 import Gallery from '../compoenents/Gallery';
 import Contact from '../compoenents/Contact';
+import Navbar from '../compoenents/Navbar';
+import LavenderFooter from '../compoenents/Footer';
 
 interface HomeProps {
   onNavigate: (page: string) => void;
@@ -18,6 +20,8 @@ export default function Home({ onNavigate }: HomeProps) {
 
   return (
     <div>
+<Navbar/>
+
       {/* Hero Section */}
       <HeroCarousel onViewProducts={scrollToProducts} />
 
@@ -32,6 +36,8 @@ export default function Home({ onNavigate }: HomeProps) {
 
       {/* Contact Section */}
       <Contact />
+
+    <LavenderFooter/>
     </div>
   );
 }

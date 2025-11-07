@@ -1,27 +1,26 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './config/context/AuthContext';
-import { ProtectedRoute } from './compoenents/ProtectedRoute';
-import { Layout } from './compoenents/DashboardLayout';
-import { Login } from './pages/Login';
-import { Sarees } from './pages/SareeList';
-import CategoryForm from './pages/CategoryList';
-import Navbar from './compoenents/Navbar';
-import HeroCarousel from './compoenents/HeroCarousel';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./config/context/AuthContext";
+import { ProtectedRoute } from "./compoenents/ProtectedRoute";
+import { Layout } from "./compoenents/DashboardLayout";
+import { Login } from "./pages/Login";
+import { Sarees } from "./pages/SareeList";
+import CategoryForm from "./pages/CategoryList";
+import Home from "./pages/Home"; // ✅ Import your Home page
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/navbar" element={<Navbar />} />
+          {/* ✅ Public Routes */}
+          
+          <Route path="/" element={<Home onNavigate={() => {}} />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/hero" element={<HeroCarousel onViewProducts={function (): void {
-            throw new Error('Function not implemented.');
-          } } />} />
+          
 
-        
+          {/* ✅ Protected Admin Routes */}
           <Route
-            path="/"
+            path="/admin"
             element={
               <ProtectedRoute>
                 <Layout>
@@ -30,8 +29,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
-            path="/categories"
+            path="/admin/categories"
             element={
               <ProtectedRoute>
                 <Layout>
@@ -40,6 +40,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* ✅ Redirect unknown paths */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

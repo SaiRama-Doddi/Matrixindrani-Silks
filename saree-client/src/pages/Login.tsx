@@ -18,7 +18,7 @@ export function Login() {
 
     try {
       await login(email, password);
-      navigate('/');
+      navigate('/admin');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
