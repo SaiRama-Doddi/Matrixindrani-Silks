@@ -24,7 +24,22 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { token } = useAuth();
+const [previewImages, setPreviewImages] = useState<string[]>([]);
 
+
+useEffect(() => {
+  if (images.length > 0) {
+    const urls = images.map((file) => URL.createObjectURL(file));
+    setPreviewImages(urls);
+
+    // cleanup URLs on unmount or when new files are selected
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  } else {
+    setPreviewImages([]);
+  }
+}, [images]);
   /* ---------- Load categories + saree ---------- */
   useEffect(() => {
     fetchCategories();
@@ -212,29 +227,60 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
           </div>
 
           {/* Existing Images with delete (X) */}
-          {existingImages.length > 0 && (
-            <div>
-              <p className="text-sm text-slate-600 mb-2">Current Images:</p>
-              <div className="grid grid-cols-3 gap-3">
-                {existingImages.map((img, idx) => (
-                  <div key={idx} className="relative">
-                    <img
-                      src={img}
-                      alt={`Existing ${idx + 1}`}
-                      className="w-full h-24 object-cover rounded-lg border border-slate-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveExistingImage(idx)}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+         {/* Existing Images */}
+{existingImages.length > 0 && (
+  <div>
+    <p className="text-sm text-slate-600 mb-2">Current Images:</p>
+    <div className="grid grid-cols-3 gap-3">
+      {existingImages.map((img, idx) => (
+        <div key={idx} className="relative">
+          <img
+            src={img}
+            alt={`Existing ${idx + 1}`}
+            className="w-full h-24 object-cover rounded-lg border border-slate-200"
+          />
+          <button
+            type="button"
+            onClick={() => handleRemoveExistingImage(idx)}
+            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+{/* 👇 Add this right after */}
+{previewImages.length > 0 && (
+  <div>
+    <p className="text-sm text-slate-600 mb-2">New Images:</p>
+    <div className="grid grid-cols-3 gap-3">
+      {previewImages.map((img, idx) => (
+        <div key={idx} className="relative">
+          <img
+            src={img}
+            alt={`Preview ${idx + 1}`}
+            className="w-full h-24 object-cover rounded-lg border border-slate-200"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const newFiles = [...images];
+              newFiles.splice(idx, 1);
+              setImages(newFiles);
+            }}
+            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
 
           {/* Upload new images */}
           <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-slate-400 transition">
