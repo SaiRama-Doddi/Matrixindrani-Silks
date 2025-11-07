@@ -5,12 +5,41 @@ import SareeList from './pages/SareeList';
 import SareeForm from './pages/SareeForm';
 import DashboardLayout from './compoenents/DashboardLayout';
 import type { Saree } from './types/saree';
+import type { Category } from './types/category'; // create a type for Category
+import CategoryList from './pages/CategoryList';
+import CategoryForm from './pages/CategoryForm';
 
 function AppContent() {
   const { isAuthenticated } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [editingSaree, setEditingSaree] = useState<Saree | undefined>();
   const [refreshKey, setRefreshKey] = useState(0);
+const [showCategoryForm, setShowCategoryForm] = useState(false);
+const [editingCategory, setEditingCategory] = useState<Category | undefined>();
+const [refreshCategoryKey, setRefreshCategoryKey] = useState(0);
+
+
+const handleEditCategory = (category: any) => {
+  setEditingCategory(category as Category);
+  setShowCategoryForm(true);
+};
+
+const handleCreateCategory = () => {
+  setEditingCategory(undefined);
+  setShowCategoryForm(true);
+};
+
+const handleCloseCategoryForm = () => {
+  setShowCategoryForm(false);
+  setEditingCategory(undefined);
+};
+
+const handleCategorySuccess = () => {
+  setShowCategoryForm(false);
+  setEditingCategory(undefined);
+  setRefreshCategoryKey((prev) => prev + 1);
+};
+
 
   const handleEdit = (saree: Saree) => {
     setEditingSaree(saree);
@@ -38,12 +67,32 @@ function AppContent() {
   }
 
   return (
-    <DashboardLayout>
-      <SareeList key={refreshKey} onEdit={handleEdit} onCreate={handleCreate} />
-      {showForm && (
-        <SareeForm saree={editingSaree} onClose={handleClose} onSuccess={handleSuccess} />
-      )}
-    </DashboardLayout>
+  <DashboardLayout>
+  {/* Sarees */}
+  <SareeList key={refreshKey} onEdit={handleEdit} onCreate={handleCreate} />
+  {showForm && (
+    <SareeForm
+      saree={editingSaree}
+      onClose={handleClose}
+      onSuccess={handleSuccess}
+    />
+  )}
+
+  {/* Categories */}
+  <CategoryList
+    key={refreshCategoryKey}
+    onEdit={handleEditCategory}
+    onCreate={handleCreateCategory}
+  />
+  {showCategoryForm && (
+    <CategoryForm
+      category={editingCategory}
+      onClose={handleCloseCategoryForm}
+      onSuccess={handleCategorySuccess}
+    />
+  )}
+</DashboardLayout>
+
   );
 }
 
