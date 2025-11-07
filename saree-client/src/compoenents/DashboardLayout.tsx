@@ -18,10 +18,10 @@ export function Layout({ children }: LayoutProps) {
     navigate('/login');
   };
 
-  const navItems = [
-    { path: '/', label: 'Sarees', icon: Package },
-    { path: '/categories', label: 'Categories', icon: FolderTree },
-  ];
+ const navItems = [
+  { path: '/admin', label: 'Sarees', icon: Package },
+  { path: '/admin/categories', label: 'Categories', icon: FolderTree },
+];
 
   return (
     <div className="min-h-screen bg-gray-50">
