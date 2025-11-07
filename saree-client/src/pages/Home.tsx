@@ -6,9 +6,7 @@ import Contact from '../compoenents/Contact';
 import Navbar from '../compoenents/Navbar';
 import LavenderFooter from '../compoenents/Footer';
 
-interface HomeProps {
-  onNavigate: (page: string) => void;
-}
+
 
 export default function Home() {
   const scrollToProducts = () => {
