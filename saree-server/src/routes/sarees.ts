@@ -46,49 +46,69 @@ const prisma = new PrismaClient();
 });
 
 
-/* ---------- UPDATE SAREE ---------- */
+/* ---------- UPDATE SAREE ---------- *//* ---------- UPDATE SAREE ---------- */
 router.put("/:id", authenticateToken, upload.array("images", 3), async (req, res) => {
   const { id } = req.params;
   try {
     const existing = await prisma.saree.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Saree not found" });
 
-    // Handle image uploads
-    let images = [existing.image1, existing.image2, existing.image3];
+    const updates: any = {};
 
+    // Handle text fields
+    if (req.body.productName?.trim()) {
+      updates.productName = req.body.productName.trim();
+    }
+
+    if (req.body.categoryId && req.body.categoryId !== "null") {
+      updates.categoryId = req.body.categoryId;
+    }
+
+    if (req.body.price) {
+      updates.price = parseFloat(req.body.price);
+    }
+
+    if (req.body.offerPrice !== undefined) {
+      updates.offerPrice = req.body.offerPrice === "" ? null : parseFloat(req.body.offerPrice);
+    }
+
+    if (req.body.rating !== undefined) {
+      const r = parseFloat(req.body.rating);
+      updates.rating = isNaN(r) || req.body.rating === "" ? null : Math.round(r * 10) / 10;
+    }
+
+    // Handle image uploads - only update images that are provided
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-      const uploaded = await Promise.all(
-        (req.files as Express.Multer.File[]).map(async (file) => {
+      const files = req.files as Express.Multer.File[];
+      
+      // Upload new images to Cloudinary
+      const uploadedUrls = await Promise.all(
+        files.map(async (file) => {
           const result = await cloudinary.uploader.upload(file.path, {
             folder: "sarees",
           });
           return result.secure_url;
         })
       );
-      images = uploaded;
+
+      // Assign to specific image slots based on which ones were sent
+      // Expecting imageSlots in body like: "0,1,2" or "0" or "1,2"
+      const imageSlots = req.body.imageSlots 
+        ? req.body.imageSlots.split(',').map((s: string) => parseInt(s.trim()))
+        : uploadedUrls.map((_, i) => i);
+
+      uploadedUrls.forEach((url, index) => {
+        const slot = imageSlots[index];
+        if (slot === 0) updates.image1 = url;
+        else if (slot === 1) updates.image2 = url;
+        else if (slot === 2) updates.image3 = url;
+      });
     }
 
-    // Prepare update data
-    const updates: any = {};
-
-    if (req.body.productName !== undefined && req.body.productName.trim() !== "")
-      updates.productName = req.body.productName;
-
-    if (req.body.categoryId !== undefined && req.body.categoryId !== "null")
-      updates.categoryId = req.body.categoryId;
-
-    if (req.body.price !== undefined && req.body.price !== "")
-      updates.price = parseFloat(req.body.price);
-
-    if (req.body.offerPrice !== undefined && req.body.offerPrice !== "")
-      updates.offerPrice = parseFloat(req.body.offerPrice);
-
-    if (req.body.rating !== undefined && req.body.rating !== "") {
-      const r = parseFloat(req.body.rating);
-      updates.rating = isNaN(r) ? null : Math.round(r * 10) / 10;
-    }
-
-    [updates.image1, updates.image2, updates.image3] = images;
+    // Handle explicit image deletions (if frontend sends deleteImage1, deleteImage2, deleteImage3)
+    if (req.body.deleteImage1 === 'true') updates.image1 = null;
+    if (req.body.deleteImage2 === 'true') updates.image2 = null;
+    if (req.body.deleteImage3 === 'true') updates.image3 = null;
 
     const updated = await prisma.saree.update({
       where: { id },
@@ -96,12 +116,13 @@ router.put("/:id", authenticateToken, upload.array("images", 3), async (req, res
       include: { category: true },
     });
 
-    res.json({ message: "✅ Saree updated successfully", saree: updated });
+    res.json({ message: "Saree updated successfully", saree: updated });
   } catch (err: any) {
     console.error("Update error:", err.message || err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
+
 
 /* ---------- DELETE SAREE ---------- */
 router.delete("/:id", authenticateToken, async (req, res) => {
