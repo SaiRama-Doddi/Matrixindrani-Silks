@@ -125,16 +125,17 @@ router.delete("/:id", authenticateToken, async (req, res) => {
 /* ---------- FETCH ALL SAREES ---------- */
 router.get("/", async (req, res) => {
   try {
-    // Optional filters from query params
     const { category, productName } = req.query;
 
     const sarees = await prisma.saree.findMany({
       where: {
         AND: [
-          category ? { category: { contains: String(category), mode: "insensitive" } } : {},
+          // Filter by related category name
+          category ? { category: { name: { contains: String(category), mode: "insensitive" } } } : {},
           productName ? { productName: { contains: String(productName), mode: "insensitive" } } : {},
         ],
       },
+      include: { category: true }, // Include category data
       orderBy: { createdAt: "desc" },
     });
 
@@ -144,6 +145,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 /* ---------- FETCH SINGLE SAREE BY ID ---------- */
 router.get("/:id", async (req, res) => {
