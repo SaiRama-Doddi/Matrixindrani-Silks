@@ -1,0 +1,34 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  createdAt    DateTime @default(now())
+  sarees       Saree[]
+}
+
+model Saree {
+  id          String   @id @default(uuid())
+  productName String
+  category    String
+  price       Float
+  offerPrice  Float?
+  rating      Float?
+  image1      String?
+  image2      String?
+  image3      String?
+  createdAt   DateTime @default(now())
+  createdBy   String?
+  admin       AdminUser? @relation(fields: [createdBy], references: [id])
+}
