@@ -16,6 +16,7 @@ app.use(cors());
 const allowedOrigins = [
   "http://localhost:5173", // for local dev
   "https://matrixindrani-silks.vercel.app" // ✅ your deployed frontend (update with your actual frontend URL)
+  
 ];
 
 app.use(

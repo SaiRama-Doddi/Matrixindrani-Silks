@@ -41,6 +41,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       password,
     });
+    console.log("API_URL:", API_URL);
+
 
     const { token: newToken, user: newUser } = response.data;
 
