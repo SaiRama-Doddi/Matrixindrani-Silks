@@ -6,7 +6,6 @@
     "outDir": "./dist",
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "ignoreDeprecations": "ignore",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
