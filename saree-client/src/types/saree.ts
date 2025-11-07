@@ -1,7 +1,11 @@
 export interface Saree {
   id: string;
   productName: string;
-  category: string;
+ categoryId: string;
+  category?: {
+    id: string;
+    name: string;
+  };
   price: number;
   offerPrice?: number;
   rating?: number;

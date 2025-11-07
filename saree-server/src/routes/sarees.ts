@@ -10,20 +10,17 @@ const prisma = new PrismaClient();
 /* ---------- CREATE SAREE ---------- */
 router.post("/", authenticateToken, upload.array("images", 3), async (req, res) => {
   try {
-    const { productName, categoryId, price, offerPrice, rating } = req.body;
+    const { productName, categoryId, price, offerPrice, rating } = req.body; // 👈 categoryId not category
     const files = req.files as Express.Multer.File[];
-
-    if (!files || files.length === 0) {
-      return res.status(400).json({ message: "Please upload at least one image." });
-    }
 
     if (!categoryId) {
       return res.status(400).json({ message: "Category ID is required" });
     }
 
-    const categoryExists = await prisma.category.findUnique({ where: { id: categoryId } });
-    if (!categoryExists) {
-      return res.status(404).json({ message: "Invalid category ID" });
+    // verify category exists
+    const category = await prisma.category.findUnique({ where: { id: categoryId } });
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
     }
 
     const imageUrls = files.map((file) => file.path);
@@ -31,7 +28,7 @@ router.post("/", authenticateToken, upload.array("images", 3), async (req, res) 
     const saree = await prisma.saree.create({
       data: {
         productName,
-        categoryId, // ✅ Link to category
+        categoryId, // ✅ use this foreign key
         price: parseFloat(price),
         offerPrice: offerPrice ? parseFloat(offerPrice) : null,
         rating: rating ? parseFloat(rating) : null,
@@ -48,6 +45,7 @@ router.post("/", authenticateToken, upload.array("images", 3), async (req, res) 
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 /* ---------- UPDATE SAREE ---------- */
 router.put("/:id", authenticateToken, upload.array("images", 3), async (req, res) => {
@@ -117,8 +115,7 @@ router.delete("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-/* ---------- FETCH ALL SAREES ---------- */
-router.get("/", async (req, res) => {
+/* ---------- FETCH ALL SAREES ---------- */router.get("/", async (req, res) => {
   try {
     const { categoryId, productName } = req.query;
 
@@ -127,11 +124,16 @@ router.get("/", async (req, res) => {
         AND: [
           categoryId ? { categoryId: String(categoryId) } : {},
           productName
-            ? { productName: { contains: String(productName), mode: "insensitive" } }
+            ? {
+                productName: {
+                  contains: String(productName),
+                  mode: "insensitive",
+                },
+              }
             : {},
         ],
       },
-      include: { category: true },
+      include: { category: true }, // ✅ ensures category data joins correctly
       orderBy: { createdAt: "desc" },
     });
 

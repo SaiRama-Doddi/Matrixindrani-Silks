@@ -12,24 +12,43 @@ interface SareeFormProps {
 }
 
 export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps) {
-  const [formData, setFormData] = useState({
-    productName: '',
-    category: '',
-    price: '',
-    offerPrice: '',
-    rating: '',
-  });
+const [formData, setFormData] = useState({
+  productName: '',
+  categoryId: '',
+  price: '',
+  offerPrice: '',
+  rating: '',
+});
+
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { token } = useAuth();
+const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(API_ENDPOINTS.CATEGORIES, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const catArray = Array.isArray(data) ? data : data.categories || [];
+      setCategories(catArray);
+    } catch (err) {
+      console.error("Failed to load categories:", err);
+    }
+  };
+
+  fetchCategories();
+}, [token]);
 
   useEffect(() => {
     if (saree) {
       setFormData({
         productName: saree.productName,
-        category: saree.category,
+     categoryId: saree.categoryId || '',
+
         price: saree.price.toString(),
         offerPrice: saree.offerPrice?.toString() || '',
         rating: saree.rating?.toString() || '',
@@ -75,7 +94,7 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
   try {
     const formDataToSend = new FormData();
     formDataToSend.append('productName', formData.productName);
-    formDataToSend.append('category', formData.category);
+    formDataToSend.append('category', formData.categoryId);
 
     // Convert to numbers
   formDataToSend.append('price', Number(formData.price).toString());
@@ -150,17 +169,20 @@ if (formData.rating) formDataToSend.append('rating', formData.rating);
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Category *
-            </label>
-            <input
-              type="text"
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              required
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
-              placeholder="e.g., Silk, Cotton, Designer"
-            />
+            <select
+  value={formData.categoryId}
+  onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+  required
+  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
+>
+  <option value="">Select a category</option>
+  {categories.map((cat) => (
+    <option key={cat.id} value={cat.id}>
+      {cat.name}
+    </option>
+  ))}
+</select>
+
           </div>
 
           <div className="grid grid-cols-2 gap-4">

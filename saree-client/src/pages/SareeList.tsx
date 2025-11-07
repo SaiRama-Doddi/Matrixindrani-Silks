@@ -136,7 +136,10 @@ const fetchSarees = async () => {
                 <h3 className="text-lg font-semibold text-slate-900 mb-1">
                   {saree.productName}
                 </h3>
-                <p className="text-sm text-slate-600 mb-3">{saree.category}</p>
+               <p className="text-sm text-slate-600 mb-3">
+  {saree.category?.name || 'No Category'}
+</p>
+
 
                 <div className="flex items-center gap-2 mb-3">
                   {saree.offerPrice ? (

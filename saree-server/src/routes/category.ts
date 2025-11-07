@@ -77,11 +77,12 @@ router.get("/", async (req, res) => {
     const categories = await prisma.category.findMany({
       orderBy: { createdAt: "desc" },
     });
-    res.json({ categories });
+    res.json(categories); // ✅ not { categories }
   } catch (err) {
     console.error("Fetch categories error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 export default router;
