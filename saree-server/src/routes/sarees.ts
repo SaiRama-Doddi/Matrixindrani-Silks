@@ -7,16 +7,17 @@ import cloudinary from "../config/cloudinary";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-/* ---------- CREATE SAREE ---------- */router.post("/", authenticateToken, upload.array("images", 3), async (req, res) => {
+/* ---------- CREATE SAREE ---------- */
+router.post("/", authenticateToken, upload.array("images", 3), async (req, res) => {
   try {
-    const { productName, categoryId, price, offerPrice, rating } = req.body;
+    const { productName, categoryId, price, offerPrice, rating } = req.body; // 👈 categoryId not category
     const files = req.files as Express.Multer.File[];
 
     if (!categoryId) {
       return res.status(400).json({ message: "Category ID is required" });
     }
 
-    // check if category exists
+    // verify category exists
     const category = await prisma.category.findUnique({ where: { id: categoryId } });
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
@@ -27,7 +28,7 @@ const prisma = new PrismaClient();
     const saree = await prisma.saree.create({
       data: {
         productName,
-        categoryId,
+        categoryId, // ✅ use this foreign key
         price: parseFloat(price),
         offerPrice: offerPrice ? parseFloat(offerPrice) : null,
         rating: rating ? parseFloat(rating) : null,
@@ -53,39 +54,20 @@ router.put("/:id", authenticateToken, upload.array("images", 3), async (req, res
     const existing = await prisma.saree.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Saree not found" });
 
-    // Handle image uploads
     let images = [existing.image1, existing.image2, existing.image3];
-
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-      const uploaded = await Promise.all(
-        (req.files as Express.Multer.File[]).map(async (file) => {
-          const result = await cloudinary.uploader.upload(file.path, {
-            folder: "sarees",
-          });
-          return result.secure_url;
-        })
-      );
+      const uploaded = (req.files as Express.Multer.File[]).map((f) => f.path);
       images = uploaded;
     }
 
-    // Prepare update data
     const updates: any = {};
-
-    if (req.body.productName !== undefined && req.body.productName.trim() !== "")
-      updates.productName = req.body.productName;
-
-    if (req.body.categoryId !== undefined && req.body.categoryId !== "null")
-      updates.categoryId = req.body.categoryId;
-
-    if (req.body.price !== undefined && req.body.price !== "")
-      updates.price = parseFloat(req.body.price);
-
-    if (req.body.offerPrice !== undefined && req.body.offerPrice !== "")
-      updates.offerPrice = parseFloat(req.body.offerPrice);
-
-    if (req.body.rating !== undefined && req.body.rating !== "") {
+    if (req.body.productName !== undefined) updates.productName = req.body.productName;
+    if (req.body.categoryId !== undefined) updates.categoryId = req.body.categoryId;
+    if (req.body.price !== undefined) updates.price = parseFloat(req.body.price);
+    if (req.body.offerPrice !== undefined) updates.offerPrice = parseFloat(req.body.offerPrice);
+    if (req.body.rating !== undefined) {
       const r = parseFloat(req.body.rating);
-      updates.rating = isNaN(r) ? null : Math.round(r * 10) / 10;
+      updates.rating = Math.round(r * 10) / 10;
     }
 
     [updates.image1, updates.image2, updates.image3] = images;
@@ -96,9 +78,9 @@ router.put("/:id", authenticateToken, upload.array("images", 3), async (req, res
       include: { category: true },
     });
 
-    res.json({ message: "✅ Saree updated successfully", saree: updated });
-  } catch (err: any) {
-    console.error("Update error:", err.message || err);
+    res.json({ message: "✅ Saree updated successfully", updated });
+  } catch (err) {
+    console.error("Update error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });

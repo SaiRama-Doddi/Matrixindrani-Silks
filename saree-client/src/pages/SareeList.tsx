@@ -5,9 +5,12 @@ import { API_ENDPOINTS } from '../config/api';
 import { Plus, Edit, Trash2, Star, Package } from 'lucide-react';
 
 interface SareeListProps {
+  sarees: Saree[];
+  setSarees: React.Dispatch<React.SetStateAction<Saree[]>>;
   onEdit: (saree: Saree) => void;
   onCreate: () => void;
 }
+
 
 export default function SareeList({ onEdit, onCreate }: SareeListProps) {
   const [sarees, setSarees] = useState<Saree[]>([]);

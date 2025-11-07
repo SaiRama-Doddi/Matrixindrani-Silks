@@ -18,7 +18,7 @@ const [showCategoryForm, setShowCategoryForm] = useState(false);
 const [editingCategory, setEditingCategory] = useState<Category | undefined>();
 const [refreshCategoryKey, setRefreshCategoryKey] = useState(0);
 
-
+const [sarees, setSarees] = useState<Saree[]>([]);
 const handleEditCategory = (category: any) => {
   setEditingCategory(category as Category);
   setShowCategoryForm(true);
@@ -40,27 +40,39 @@ const handleCategorySuccess = () => {
   setRefreshCategoryKey((prev) => prev + 1);
 };
 
+const handleEdit = (saree: Saree) => {
+  setEditingSaree(saree);
+  setShowForm(true);
+};
 
-  const handleEdit = (saree: Saree) => {
-    setEditingSaree(saree);
-    setShowForm(true);
-  };
+const handleCreate = () => {
+  setEditingSaree(undefined);
+  setShowForm(true);
+};
 
-  const handleCreate = () => {
-    setEditingSaree(undefined);
-    setShowForm(true);
-  };
+const handleClose = () => {
+  setShowForm(false);
+  setEditingSaree(undefined);
+};
 
-  const handleClose = () => {
-    setShowForm(false);
-    setEditingSaree(undefined);
-  };
+// 🔥 New handleSuccess function — updates only edited or newly added saree
+const handleSuccess = (updatedSaree?: Saree) => {
+  setShowForm(false);
+  setEditingSaree(undefined);
 
-  const handleSuccess = () => {
-    setShowForm(false);
-    setEditingSaree(undefined);
-    setRefreshKey((prev) => prev + 1);
-  };
+  if (updatedSaree) {
+    setSarees((prev) => {
+      const exists = prev.find((s) => s.id === updatedSaree.id);
+      if (exists) {
+        // Update existing saree
+        return prev.map((s) => (s.id === updatedSaree.id ? updatedSaree : s));
+      } else {
+        // Add new saree
+        return [updatedSaree, ...prev];
+      }
+    });
+  }
+};
 
   if (!isAuthenticated) {
     return <Login />;
@@ -69,14 +81,20 @@ const handleCategorySuccess = () => {
   return (
   <DashboardLayout>
   {/* Sarees */}
-  <SareeList key={refreshKey} onEdit={handleEdit} onCreate={handleCreate} />
-  {showForm && (
-    <SareeForm
-      saree={editingSaree}
-      onClose={handleClose}
-      onSuccess={handleSuccess}
-    />
-  )}
+<SareeList
+  sarees={sarees}
+  setSarees={setSarees}
+  onEdit={handleEdit}
+  onCreate={handleCreate}
+/>
+{showForm && (
+  <SareeForm
+    saree={editingSaree}
+    onClose={handleClose}
+    onSuccess={handleSuccess}
+  />
+)}
+
 
   {/* Categories */}
   <CategoryList

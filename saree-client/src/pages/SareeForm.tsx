@@ -1,39 +1,42 @@
-import { useState, useEffect } from 'react';
-import type { FormEvent, ChangeEvent } from 'react';
-import { useAuth } from '../config/context/AuthContext';
-import { API_ENDPOINTS } from '../config/api';
-import type { Saree } from '../types/saree';
-import type { Category } from '../types/category';
-import { Upload, X } from 'lucide-react';
+import { useState, useEffect } from "react";
+import type { FormEvent, ChangeEvent } from "react";
+import { useAuth } from "../config/context/AuthContext";
+import { API_ENDPOINTS } from "../config/api";
+import type { Saree } from "../types/saree";
+import type { Category } from "../types/category";
+import { Upload, X } from "lucide-react";
 
 interface SareeFormProps {
   saree?: Saree;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (updated?: Saree) => void; // 👈 send updated saree back
 }
 
 export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps) {
-  const [productName, setProductName] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [price, setPrice] = useState('');
-  const [offerPrice, setOfferPrice] = useState('');
-  const [rating, setRating] = useState('');
+  const [productName, setProductName] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [price, setPrice] = useState("");
+  const [offerPrice, setOfferPrice] = useState("");
+  const [rating, setRating] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const { token } = useAuth();
 
+  /* ---------- Load categories + saree ---------- */
   useEffect(() => {
     fetchCategories();
     if (saree) {
       setProductName(saree.productName);
       setCategoryId(saree.categoryId);
       setPrice(saree.price.toString());
-      setOfferPrice(saree.offerPrice?.toString() || '');
-      setRating(saree.rating?.toString() || '');
-      const imgs = [saree.image1, saree.image2, saree.image3].filter((img): img is string => !!img);
+      setOfferPrice(saree.offerPrice?.toString() || "");
+      setRating(saree.rating?.toString() || "");
+      const imgs = [saree.image1, saree.image2, saree.image3].filter(
+        (img): img is string => !!img
+      );
       setExistingImages(imgs);
     }
   }, [saree]);
@@ -45,40 +48,51 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
       });
       if (response.ok) {
         const data = await response.json();
-        const categoriesArray = Array.isArray(data) ? data : [];
-        setCategories(categoriesArray);
+        setCategories(Array.isArray(data) ? data : []);
       }
     } catch (err) {
-      console.error('Failed to fetch categories:', err);
+      console.error("Failed to fetch categories:", err);
     }
   };
 
+  /* ---------- Remove existing image ---------- */
+  const handleRemoveExistingImage = (index: number) => {
+    const newImages = [...existingImages];
+    newImages.splice(index, 1);
+    setExistingImages(newImages);
+  };
+
+  /* ---------- Handle new image uploads ---------- */
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const filesArray = Array.from(e.target.files).slice(0, 3);
-      setImages(filesArray);
+      const selectedFiles = Array.from(e.target.files).slice(0, 3);
+      setImages(selectedFiles);
     }
   };
 
+  /* ---------- Submit ---------- */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const formData = new FormData();
-      formData.append('productName', productName);
-      formData.append('categoryId', categoryId);
-      formData.append('price', price);
-      if (offerPrice) formData.append('offerPrice', offerPrice);
-      if (rating) formData.append('rating', rating);
+      formData.append("productName", productName);
+      formData.append("categoryId", categoryId);
+      formData.append("price", price);
+      if (offerPrice) formData.append("offerPrice", offerPrice);
+      if (rating) formData.append("rating", rating);
 
-      images.forEach((image) => {
-        formData.append('images', image);
-      });
+      // send existing image URLs for server to keep
+      existingImages.forEach((img) => formData.append("existingImages", img));
+      // send new uploaded files
+      images.forEach((image) => formData.append("images", image));
 
-      const url = saree ? API_ENDPOINTS.SAREE_BY_ID(saree.id) : API_ENDPOINTS.SAREES;
-      const method = saree ? 'PUT' : 'POST';
+      const url = saree
+        ? API_ENDPOINTS.SAREE_BY_ID(saree.id)
+        : API_ENDPOINTS.SAREES;
+      const method = saree ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
@@ -90,23 +104,27 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Operation failed');
+        throw new Error(errorData.message || "Operation failed");
       }
 
-      onSuccess();
+      const updated = await response.json();
+      onSuccess(updated); // 👈 return updated saree to parent
+      onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Operation failed');
+      setError(err instanceof Error ? err.message : "Operation failed");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ---------- UI ---------- */
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-8">
+        {/* Header */}
         <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
           <h2 className="text-2xl font-bold text-slate-900">
-            {saree ? 'Edit Saree' : 'Add New Saree'}
+            {saree ? "Edit Saree" : "Add New Saree"}
           </h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition">
             <X className="w-6 h-6" />
@@ -120,6 +138,7 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
             </div>
           )}
 
+          {/* Product Name */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Product Name *</label>
             <input
@@ -127,18 +146,19 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
               required
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900"
               placeholder="e.g., Banarasi Silk Saree"
             />
           </div>
 
+          {/* Category */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Category *</label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               required
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900"
             >
               <option value="">Select a category</option>
               {categories.map((cat) => (
@@ -149,6 +169,7 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
             </select>
           </div>
 
+          {/* Price / Offer */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Price *</label>
@@ -158,11 +179,10 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900"
                 placeholder="0.00"
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Offer Price</label>
               <input
@@ -170,12 +190,13 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
                 step="0.01"
                 value={offerPrice}
                 onChange={(e) => setOfferPrice(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900"
                 placeholder="0.00"
               />
             </div>
           </div>
 
+          {/* Rating */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Rating</label>
             <input
@@ -185,69 +206,72 @@ export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps)
               max="5"
               value={rating}
               onChange={(e) => setRating(e.target.value)}
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900"
               placeholder="0.0"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Images (up to 3)
-            </label>
-
-            {existingImages.length > 0 && (
-              <div className="mb-4">
-                <p className="text-sm text-slate-600 mb-2">Current Images:</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {existingImages.map((img, idx) => (
+          {/* Existing Images with delete (X) */}
+          {existingImages.length > 0 && (
+            <div>
+              <p className="text-sm text-slate-600 mb-2">Current Images:</p>
+              <div className="grid grid-cols-3 gap-3">
+                {existingImages.map((img, idx) => (
+                  <div key={idx} className="relative">
                     <img
-                      key={idx}
                       src={img}
                       alt={`Existing ${idx + 1}`}
                       className="w-full h-24 object-cover rounded-lg border border-slate-200"
                     />
-                  ))}
-                </div>
-                <p className="text-xs text-slate-500 mt-2">Upload new images to replace these</p>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveExistingImage(idx)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
               </div>
-            )}
-
-            <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-slate-400 transition">
-              <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-              <label className="cursor-pointer">
-                <span className="text-sm text-slate-600">
-                  Click to upload or drag and drop
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </label>
-              {images.length > 0 && (
-                <p className="text-sm text-slate-700 mt-2">
-                  {images.length} file{images.length > 1 ? 's' : ''} selected
-                </p>
-              )}
             </div>
+          )}
+
+          {/* Upload new images */}
+          <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-slate-400 transition">
+            <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+            <label className="cursor-pointer">
+              <span className="text-sm text-slate-600">
+                Click to upload or drag and drop (max 3)
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="hidden"
+              />
+            </label>
+            {images.length > 0 && (
+              <p className="text-sm text-slate-700 mt-2">
+                {images.length} file{images.length > 1 ? "s" : ""} selected
+              </p>
+            )}
           </div>
 
           <div className="flex gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition"
+              className="flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50"
             >
-              {loading ? 'Saving...' : saree ? 'Update Saree' : 'Create Saree'}
+              {loading ? "Saving..." : saree ? "Update Saree" : "Create Saree"}
             </button>
           </div>
         </form>
