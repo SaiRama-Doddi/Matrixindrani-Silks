@@ -21,7 +21,8 @@ model AdminUser {
 model Saree {
   id          String   @id @default(uuid())
   productName String
-  category    String
+ categoryId  String?   // updated from category string
+  category    Category? @relation(fields: [categoryId], references: [id])
   price       Float
   offerPrice  Float?
   rating      Float?
@@ -31,4 +32,12 @@ model Saree {
   createdAt   DateTime @default(now())
   createdBy   String?
   admin       AdminUser? @relation(fields: [createdBy], references: [id])
+}
+
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  sarees    Saree[]
 }

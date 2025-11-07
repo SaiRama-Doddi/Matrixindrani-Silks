@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth";
 import sareeRoutes from "./routes/sarees";
 import { createDefaultAdmin } from "./utils/createDefaultAdmin";
+import categoryRouter from "./routes/category";
+
+
 
 dotenv.config();
 const app = express();
@@ -12,6 +15,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/sarees", sareeRoutes);
+app.use("/api/categories", categoryRouter);
 
 app.get("/", (req, res) => res.send("Saree API running..."));
 

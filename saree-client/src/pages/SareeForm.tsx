@@ -4,7 +4,7 @@ import { useAuth } from '../config/context/AuthContext';
 import type { Saree } from '../types/saree';
 import { API_ENDPOINTS } from '../config/api';
 import { X, Upload} from 'lucide-react';
-
+ 
 interface SareeFormProps {
   saree?: Saree;
   onClose: () => void;
