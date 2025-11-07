@@ -1,0 +1,15 @@
+# Node modules
+node_modules/
+saree-client/node_modules/
+saree-server/node_modules/
+
+# Build folders
+saree-client/build/
+saree-server/dist/
+
+# Env files
+saree-client/.env
+saree-server/.env
+
+# Logs
+*.log
