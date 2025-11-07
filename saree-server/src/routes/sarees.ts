@@ -53,20 +53,39 @@ router.put("/:id", authenticateToken, upload.array("images", 3), async (req, res
     const existing = await prisma.saree.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Saree not found" });
 
+    // Handle image uploads
     let images = [existing.image1, existing.image2, existing.image3];
+
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-      const uploaded = (req.files as Express.Multer.File[]).map((f) => f.path);
+      const uploaded = await Promise.all(
+        (req.files as Express.Multer.File[]).map(async (file) => {
+          const result = await cloudinary.uploader.upload(file.path, {
+            folder: "sarees",
+          });
+          return result.secure_url;
+        })
+      );
       images = uploaded;
     }
 
+    // Prepare update data
     const updates: any = {};
-    if (req.body.productName !== undefined) updates.productName = req.body.productName;
-    if (req.body.categoryId !== undefined) updates.categoryId = req.body.categoryId;
-    if (req.body.price !== undefined) updates.price = parseFloat(req.body.price);
-    if (req.body.offerPrice !== undefined) updates.offerPrice = parseFloat(req.body.offerPrice);
-    if (req.body.rating !== undefined) {
+
+    if (req.body.productName !== undefined && req.body.productName.trim() !== "")
+      updates.productName = req.body.productName;
+
+    if (req.body.categoryId !== undefined && req.body.categoryId !== "null")
+      updates.categoryId = req.body.categoryId;
+
+    if (req.body.price !== undefined && req.body.price !== "")
+      updates.price = parseFloat(req.body.price);
+
+    if (req.body.offerPrice !== undefined && req.body.offerPrice !== "")
+      updates.offerPrice = parseFloat(req.body.offerPrice);
+
+    if (req.body.rating !== undefined && req.body.rating !== "") {
       const r = parseFloat(req.body.rating);
-      updates.rating = Math.round(r * 10) / 10;
+      updates.rating = isNaN(r) ? null : Math.round(r * 10) / 10;
     }
 
     [updates.image1, updates.image2, updates.image3] = images;
@@ -77,9 +96,9 @@ router.put("/:id", authenticateToken, upload.array("images", 3), async (req, res
       include: { category: true },
     });
 
-    res.json({ message: "✅ Saree updated successfully", updated });
-  } catch (err) {
-    console.error("Update error:", err);
+    res.json({ message: "✅ Saree updated successfully", saree: updated });
+  } catch (err: any) {
+    console.error("Update error:", err.message || err);
     res.status(500).json({ message: "Server error" });
   }
 });
