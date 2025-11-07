@@ -115,34 +115,20 @@ router.delete("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-/* ---------- FETCH ALL SAREES ---------- */router.get("/", async (req, res) => {
+/* ---------- FETCH ALL SAREES ---------- */
+router.get("/", async (req, res) => {
   try {
-    const { categoryId, productName } = req.query;
-
     const sarees = await prisma.saree.findMany({
-      where: {
-        AND: [
-          categoryId ? { categoryId: String(categoryId) } : {},
-          productName
-            ? {
-                productName: {
-                  contains: String(productName),
-                  mode: "insensitive",
-                },
-              }
-            : {},
-        ],
-      },
-      include: { category: true }, // ✅ ensures category data joins correctly
+      include: { category: true }, // ✅ include relation
       orderBy: { createdAt: "desc" },
     });
-
     res.json({ sarees });
   } catch (err) {
     console.error("Fetch sarees error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 /* ---------- FETCH SINGLE SAREE BY ID ---------- */
 router.get("/:id", async (req, res) => {
