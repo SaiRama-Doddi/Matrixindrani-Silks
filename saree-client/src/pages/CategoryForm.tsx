@@ -1,105 +1,85 @@
-import { useState, useEffect } from 'react';
-import type { FormEvent } from 'react';
-import { useAuth } from '../config/context/AuthContext';
-import { API_ENDPOINTS } from '../config/api';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 interface Category {
-  id: string;
+  id?: number;
   name: string;
 }
 
 interface CategoryFormProps {
-  category?: Category;
+  category?: Category | null;
   onClose: () => void;
-  onSuccess: () => void;
+  onSave: () => void;
 }
 
-export default function CategoryForm({ category, onClose, onSuccess }: CategoryFormProps) {
-  const [name, setName] = useState('');
+export default function CategoryForm({ category, onClose, onSave }: CategoryFormProps) {
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { token } = useAuth();
+  const API_URL = import.meta.env.VITE_API_URL ;
 
+  // Load existing category for edit
   useEffect(() => {
     if (category) setName(category.name);
+    else setName("");
   }, [category]);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    if (!name.trim()) return alert("Category name is required");
+
     setLoading(true);
-
     try {
-      const url = category ? API_ENDPOINTS.CATEGORY_BY_ID(category.id) : API_ENDPOINTS.CATEGORIES;
-      const method = category ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ name }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Operation failed');
+      if (category) {
+        // Update
+        await axios.put(`${API_URL}/api/categories/${category.id}`, { name });
+      } else {
+        // Add
+        await axios.post(`${API_URL}/api/categories`, { name });
       }
-
-      onSuccess();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Operation failed');
+      onSave();
+      onClose();
+    } catch (error) {
+      console.error("Error saving category:", error);
+      alert("Failed to save category");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-slate-900">
-            {category ? 'Edit Category' : 'Add Category'}
-          </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition">
-            X
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+      <div className="bg-white rounded-2xl shadow-xl w-[350px] p-6">
+        <h2 className="text-xl font-semibold mb-4">
+          {category ? "Edit Category" : "Add Category"}
+        </h2>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
-
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Category Name *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter category name"
               required
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
-              placeholder="e.g., Silk, Cotton, Designer"
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition"
+              className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-70"
             >
-              {loading ? 'Saving...' : category ? 'Update' : 'Create'}
+              {loading ? "Saving..." : category ? "Update" : "Add"}
             </button>
           </div>
         </form>
