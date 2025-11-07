@@ -11,6 +11,21 @@ import categoryRouter from "./routes/category";
 dotenv.config();
 const app = express();
 app.use(cors());
+
+
+const allowedOrigins = [
+  "http://localhost:5173", // for local dev
+  "https://matrixindrani-silks.vercel.app" // ✅ your deployed frontend (update with your actual frontend URL)
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);

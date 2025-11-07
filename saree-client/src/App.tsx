@@ -14,9 +14,9 @@ function App() {
         <Routes>
           {/* ✅ Public Routes */}
           
-          <Route path="/" element={<Home onNavigate={() => {}} />} />
+          <Route path="/" element={<Home  />} />
           <Route path="/login" element={<Login />} />
-          
+
 
           {/* ✅ Protected Admin Routes */}
           <Route

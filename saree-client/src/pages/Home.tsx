@@ -10,7 +10,7 @@ interface HomeProps {
   onNavigate: (page: string) => void;
 }
 
-export default function Home({ onNavigate }: HomeProps) {
+export default function Home() {
   const scrollToProducts = () => {
     const productsSection = document.getElementById('products-section');
     if (productsSection) {
@@ -20,7 +20,7 @@ export default function Home({ onNavigate }: HomeProps) {
 
   return (
     <div>
-<Navbar/>
+<Navbar />
 
       {/* Hero Section */}
       <HeroCarousel onViewProducts={scrollToProducts} />
