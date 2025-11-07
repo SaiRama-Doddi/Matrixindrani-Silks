@@ -1,7 +1,7 @@
 export interface Saree {
   id: string;
   productName: string;
- categoryId: string;
+  categoryId: string;
   category?: {
     id: string;
     name: string;

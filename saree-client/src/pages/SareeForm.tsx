@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, ChangeEvent } from 'react';
 import { useAuth } from '../config/context/AuthContext';
-import type { Saree } from '../types/saree';
 import { API_ENDPOINTS } from '../config/api';
-import { X, Upload} from 'lucide-react';
- 
+import type { Saree } from '../types/saree';
+import type { Category } from '../types/category';
+import { Upload, X } from 'lucide-react';
+
 interface SareeFormProps {
   saree?: Saree;
   onClose: () => void;
@@ -12,137 +13,102 @@ interface SareeFormProps {
 }
 
 export default function SareeForm({ saree, onClose, onSuccess }: SareeFormProps) {
-const [formData, setFormData] = useState({
-  productName: '',
-  categoryId: '',
-  price: '',
-  offerPrice: '',
-  rating: '',
-});
-
+  const [productName, setProductName] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [price, setPrice] = useState('');
+  const [offerPrice, setOfferPrice] = useState('');
+  const [rating, setRating] = useState('');
   const [images, setImages] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { token } = useAuth();
-const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
-useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch(API_ENDPOINTS.CATEGORIES, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      const catArray = Array.isArray(data) ? data : data.categories || [];
-      setCategories(catArray);
-    } catch (err) {
-      console.error("Failed to load categories:", err);
-    }
-  };
-
-  fetchCategories();
-}, [token]);
 
   useEffect(() => {
+    fetchCategories();
     if (saree) {
-      setFormData({
-        productName: saree.productName,
-     categoryId: saree.categoryId || '',
-
-        price: saree.price.toString(),
-        offerPrice: saree.offerPrice?.toString() || '',
-        rating: saree.rating?.toString() || '',
-      });
-
-      const existingImages = [saree.image1, saree.image2, saree.image3].filter(
-        (url): url is string => !!url
-      );
-      setPreviewUrls(existingImages);
+      setProductName(saree.productName);
+      setCategoryId(saree.categoryId);
+      setPrice(saree.price.toString());
+      setOfferPrice(saree.offerPrice?.toString() || '');
+      setRating(saree.rating?.toString() || '');
+      const imgs = [saree.image1, saree.image2, saree.image3].filter((img): img is string => !!img);
+      setExistingImages(imgs);
     }
   }, [saree]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length + images.length > 3) {
-      alert('You can only upload up to 3 images');
-      return;
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.CATEGORIES, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const categoriesArray = Array.isArray(data) ? data : [];
+        setCategories(categoriesArray);
+      }
+    } catch (err) {
+      console.error('Failed to fetch categories:', err);
     }
-
-    setImages([...images, ...files]);
-
-    const newPreviews = files.map((file) => URL.createObjectURL(file));
-    setPreviewUrls([...previewUrls, ...newPreviews]);
   };
 
-  const removeImage = (index: number) => {
-    const newImages = images.filter((_, i) => i !== index);
-    const newPreviews = previewUrls.filter((_, i) => i !== index);
-
-    if (previewUrls[index].startsWith('blob:')) {
-      URL.revokeObjectURL(previewUrls[index]);
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files).slice(0, 3);
+      setImages(filesArray);
     }
-
-    setImages(newImages);
-    setPreviewUrls(newPreviews);
   };
 
- const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault();
-  setError('');
-  setLoading(true);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
-  try {
-    const formDataToSend = new FormData();
-    formDataToSend.append('productName', formData.productName);
-    formDataToSend.append('category', formData.categoryId);
+    try {
+      const formData = new FormData();
+      formData.append('productName', productName);
+      formData.append('categoryId', categoryId);
+      formData.append('price', price);
+      if (offerPrice) formData.append('offerPrice', offerPrice);
+      if (rating) formData.append('rating', rating);
 
-    // Convert to numbers
-  formDataToSend.append('price', Number(formData.price).toString());
-if (formData.offerPrice) formDataToSend.append('offerPrice', Number(formData.offerPrice).toString());
-if (formData.rating) formDataToSend.append('rating', formData.rating); 
+      images.forEach((image) => {
+        formData.append('images', image);
+      });
 
+      const url = saree ? API_ENDPOINTS.SAREE_BY_ID(saree.id) : API_ENDPOINTS.SAREES;
+      const method = saree ? 'PUT' : 'POST';
 
+      const response = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
-    images.forEach((image) => {
-      formDataToSend.append('images', image);
-    });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Operation failed');
+      }
 
-    const url = saree ? API_ENDPOINTS.SAREE_BY_ID(saree.id) : API_ENDPOINTS.SAREES;
-    const method = saree ? 'PUT' : 'POST';
-
-    const response = await fetch(url, {
-      method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formDataToSend,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Operation failed');
+      onSuccess();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Operation failed');
+    } finally {
+      setLoading(false);
     }
-
-    onSuccess();
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Operation failed');
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-8">
+        <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
           <h2 className="text-2xl font-bold text-slate-900">
             {saree ? 'Edit Saree' : 'Add New Saree'}
           </h2>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 transition"
-          >
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -155,46 +121,42 @@ if (formData.rating) formDataToSend.append('rating', formData.rating);
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Product Name *
-            </label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Product Name *</label>
             <input
               type="text"
-              value={formData.productName}
-              onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
               required
               className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
-              placeholder="e.g., Silk Saree with Golden Border"
+              placeholder="e.g., Banarasi Silk Saree"
             />
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Category *</label>
             <select
-  value={formData.categoryId}
-  onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-  required
-  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
->
-  <option value="">Select a category</option>
-  {categories.map((cat) => (
-    <option key={cat.id} value={cat.id}>
-      {cat.name}
-    </option>
-  ))}
-</select>
-
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              required
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
+            >
+              <option value="">Select a category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Price *
-              </label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Price *</label>
               <input
                 type="number"
                 step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
                 required
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
                 placeholder="0.00"
@@ -202,14 +164,12 @@ if (formData.rating) formDataToSend.append('rating', formData.rating);
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Offer Price
-              </label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Offer Price</label>
               <input
                 type="number"
                 step="0.01"
-                value={formData.offerPrice}
-                onChange={(e) => setFormData({ ...formData, offerPrice: e.target.value })}
+                value={offerPrice}
+                onChange={(e) => setOfferPrice(e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
                 placeholder="0.00"
               />
@@ -217,18 +177,16 @@ if (formData.rating) formDataToSend.append('rating', formData.rating);
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Rating
-            </label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Rating</label>
             <input
               type="number"
               step="0.1"
               min="0"
               max="5"
-              value={formData.rating}
-              onChange={(e) => setFormData({ ...formData, rating: e.target.value })}
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
               className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
-              placeholder="0.0 - 5.0"
+              placeholder="0.0"
             />
           </div>
 
@@ -237,32 +195,29 @@ if (formData.rating) formDataToSend.append('rating', formData.rating);
               Images (up to 3)
             </label>
 
-            {previewUrls.length > 0 && (
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                {previewUrls.map((url, index) => (
-                  <div key={index} className="relative aspect-square">
+            {existingImages.length > 0 && (
+              <div className="mb-4">
+                <p className="text-sm text-slate-600 mb-2">Current Images:</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {existingImages.map((img, idx) => (
                     <img
-                      src={url}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-full object-cover rounded-lg border border-slate-300"
+                      key={idx}
+                      src={img}
+                      alt={`Existing ${idx + 1}`}
+                      className="w-full h-24 object-cover rounded-lg border border-slate-200"
                     />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <p className="text-xs text-slate-500 mt-2">Upload new images to replace these</p>
               </div>
             )}
 
-            {previewUrls.length < 3 && (
-              <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg p-8 cursor-pointer hover:border-slate-400 transition">
-                <Upload className="w-12 h-12 text-slate-400 mb-2" />
-                <span className="text-sm text-slate-600 mb-1">Click to upload images</span>
-                <span className="text-xs text-slate-500">PNG, JPG up to 5MB</span>
+            <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-slate-400 transition">
+              <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+              <label className="cursor-pointer">
+                <span className="text-sm text-slate-600">
+                  Click to upload or drag and drop
+                </span>
                 <input
                   type="file"
                   accept="image/*"
@@ -271,7 +226,12 @@ if (formData.rating) formDataToSend.append('rating', formData.rating);
                   className="hidden"
                 />
               </label>
-            )}
+              {images.length > 0 && (
+                <p className="text-sm text-slate-700 mt-2">
+                  {images.length} file{images.length > 1 ? 's' : ''} selected
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-3 pt-4">

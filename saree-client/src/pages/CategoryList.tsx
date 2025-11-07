@@ -2,11 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../config/context/AuthContext';
 import { API_ENDPOINTS } from '../config/api';
 import { Plus, Edit, Trash2 } from 'lucide-react';
-
-interface Category {
-  id: string;
-  name: string;
-}
+import type { Category } from '../types/category';
 
 interface CategoryListProps {
   onEdit: (category: Category) => void;
@@ -27,7 +23,7 @@ export default function CategoryList({ onEdit, onCreate }: CategoryListProps) {
       });
       if (!response.ok) throw new Error('Failed to fetch categories');
       const data = await response.json();
-      const categoriesArray = Array.isArray(data) ? data : Array.isArray(data.categories) ? data.categories : [];
+      const categoriesArray = Array.isArray(data) ? data : [];
       setCategories(categoriesArray);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch categories');
@@ -55,7 +51,13 @@ export default function CategoryList({ onEdit, onCreate }: CategoryListProps) {
     fetchCategories();
   }, [token]);
 
-  if (loading) return <div>Loading categories...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900"></div>
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -15,34 +15,27 @@ export default function SareeList({ onEdit, onCreate }: SareeListProps) {
   const [error, setError] = useState('');
   const { token } = useAuth();
 
+  const fetchSarees = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.SAREES, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache',
+        },
+      });
 
-const fetchSarees = async () => {
-  try {
-    const response = await fetch(API_ENDPOINTS.SAREES, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Cache-Control': 'no-cache',
-      },
-      cache: 'no-store', // ensures browser doesn't serve cached response
-    });
+      if (!response.ok) throw new Error('Failed to fetch sarees');
 
-    if (!response.ok) throw new Error('Failed to fetch sarees');
-
-    const data = await response.json();
-
-    // Fix: handle both array or object with sarees property
-    const sareesArray = Array.isArray(data) ? data : Array.isArray(data.sarees) ? data.sarees : [];
-
-    setSarees(sareesArray);
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Failed to load sarees');
-    setSarees([]);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+      const data = await response.json();
+      const sareesArray = Array.isArray(data) ? data : Array.isArray(data.sarees) ? data.sarees : [];
+      setSarees(sareesArray);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load sarees');
+      setSarees([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchSarees();
@@ -74,7 +67,6 @@ const fetchSarees = async () => {
       </div>
     );
   }
-
 
   return (
     <div>
@@ -136,10 +128,9 @@ const fetchSarees = async () => {
                 <h3 className="text-lg font-semibold text-slate-900 mb-1">
                   {saree.productName}
                 </h3>
-               <p className="text-sm text-slate-600 mb-3">
-  {saree.category?.name || 'No Category'}
-</p>
-
+                <p className="text-sm text-slate-600 mb-3">
+                  {saree.category?.name || 'No Category'}
+                </p>
 
                 <div className="flex items-center gap-2 mb-3">
                   {saree.offerPrice ? (
