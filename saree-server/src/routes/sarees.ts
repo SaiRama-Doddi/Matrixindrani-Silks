@@ -7,17 +7,16 @@ import cloudinary from "../config/cloudinary";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-/* ---------- CREATE SAREE ---------- */
-router.post("/", authenticateToken, upload.array("images", 3), async (req, res) => {
+/* ---------- CREATE SAREE ---------- */router.post("/", authenticateToken, upload.array("images", 3), async (req, res) => {
   try {
-    const { productName, categoryId, price, offerPrice, rating } = req.body; // 👈 categoryId not category
+    const { productName, categoryId, price, offerPrice, rating } = req.body;
     const files = req.files as Express.Multer.File[];
 
     if (!categoryId) {
       return res.status(400).json({ message: "Category ID is required" });
     }
 
-    // verify category exists
+    // check if category exists
     const category = await prisma.category.findUnique({ where: { id: categoryId } });
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
@@ -28,7 +27,7 @@ router.post("/", authenticateToken, upload.array("images", 3), async (req, res) 
     const saree = await prisma.saree.create({
       data: {
         productName,
-        categoryId, // ✅ use this foreign key
+        categoryId,
         price: parseFloat(price),
         offerPrice: offerPrice ? parseFloat(offerPrice) : null,
         rating: rating ? parseFloat(rating) : null,
