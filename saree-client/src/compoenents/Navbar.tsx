@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, User } from "lucide-react";
 
 export default function Navbar() {
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -33,36 +33,42 @@ export default function Navbar() {
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
-            <Link
+            <button
               key={link.path}
-              to={link.path}
-              className={`text-sm font-medium tracking-wide transition-all duration-200 ${
+              onClick={() => {
+                if (location.pathname === link.path) {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                } else {
+                  navigate(link.path);
+                }
+              }}
+              className={`cursor-pointer text-sm font-medium tracking-wide transition-all duration-200 ${
                 location.pathname === link.path
                   ? "text-purple-700 border-b-2 border-purple-600 pb-1"
                   : "text-gray-700 hover:text-purple-700"
               }`}
             >
               {link.label}
-            </Link>
+            </button>
           ))}
         </div>
 
         {/* Login Button (Desktop) */}
         <div className="hidden md:flex">
-      <button
-        onClick={() => navigate("/login")} // 👈 Add this line for navigation
-        className="flex items-center space-x-2 px-5 py-2 bg-gradient-to-r from-purple-400 to-purple-600 text-white rounded-full hover:from-purple-500 hover:to-purple-700 transition-all duration-300 shadow-md"
-      >
-        <User className="w-4 h-4" />
-        <span className="text-sm font-medium">Login</span>
-      </button>
-    </div>
+          <button
+            onClick={() => navigate("/login")}
+            className="flex items-center space-x-2 px-5 py-2 bg-gradient-to-r from-purple-400 to-purple-600 text-white rounded-full hover:from-purple-500 hover:to-purple-700 transition-all duration-300 shadow-md cursor-pointer"
+          >
+            <User className="w-4 h-4" />
+            <span className="text-sm font-medium">Login</span>
+          </button>
+        </div>
 
         {/* Mobile Menu Toggle */}
         <div className="md:hidden flex items-center">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-purple-700 focus:outline-none"
+            className="text-purple-700 focus:outline-none cursor-pointer"
           >
             {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
           </button>
@@ -74,21 +80,30 @@ export default function Navbar() {
         <div className="md:hidden bg-white border-t border-purple-100 shadow-sm">
           <div className="flex flex-col items-center py-4 space-y-4">
             {navLinks.map((link) => (
-              <Link
+              <button
                 key={link.path}
-                to={link.path}
-                onClick={() => setIsMenuOpen(false)}
-                className={`text-base font-medium ${
+                onClick={() => {
+                  navigate(link.path);
+                  setIsMenuOpen(false);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                className={`cursor-pointer text-base font-medium ${
                   location.pathname === link.path
                     ? "text-purple-700 border-b-2 border-purple-600 pb-1"
                     : "text-gray-700 hover:text-purple-700"
                 }`}
               >
                 {link.label}
-              </Link>
+              </button>
             ))}
 
-            <button className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-purple-400 to-purple-600 text-white rounded-full hover:from-purple-500 hover:to-purple-700 transition-all duration-300 shadow-md">
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                navigate("/login");
+              }}
+              className="cursor-pointer flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-purple-400 to-purple-600 text-white rounded-full hover:from-purple-500 hover:to-purple-700 transition-all duration-300 shadow-md"
+            >
               <User className="w-4 h-4" />
               <span className="text-sm font-medium">Login</span>
             </button>

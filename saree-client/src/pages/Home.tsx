@@ -1,16 +1,15 @@
 import HeroCarousel from '../compoenents/HeroCarousel';
-
 import About from '../compoenents/About';
 import Gallery from '../compoenents/Gallery';
 import Contact from '../compoenents/Contact';
 import Navbar from '../compoenents/Navbar';
 import LavenderFooter from '../compoenents/Footer';
+import { useLocation } from "react-router-dom";
+import Products from './Products';
 
-interface HomeProps {
-  onNavigate: (page: string) => void;
-}
+export default function Home() {
+  const location = useLocation();
 
-export default function Home({ onNavigate }: HomeProps) {
   const scrollToProducts = () => {
     const productsSection = document.getElementById('products-section');
     if (productsSection) {
@@ -20,24 +19,69 @@ export default function Home({ onNavigate }: HomeProps) {
 
   return (
     <div>
-<Navbar/>
+      <Navbar />
 
-      {/* Hero Section */}
-      <HeroCarousel onViewProducts={scrollToProducts} />
+      {location.pathname === "/" && (
+        <>
+          {/* ✅ Hero Section */}
+          <div id="hero-section">
+            <HeroCarousel onViewProducts={scrollToProducts} />
+          </div>
 
-      {/* Products Section */}
-   
+          {/* ✅ Products Section */}
+          <div id="products-section">
+            <Products />
+          </div>
 
-      {/* About Section */}
-      <About />
+          {/* ✅ About Section */}
+          <div id="about-section">
+            <About />
+          </div>
 
-      {/* Gallery Section */}
-      <Gallery />
+          {/* ✅ Gallery Section */}
+          <div id="gallery-section">
+            <Gallery />
+          </div>
 
-      {/* Contact Section */}
-      <Contact />
+          {/* ✅ Contact Section */}
+          <div id="contact-section">
+            <Contact />
+          </div>
 
-    <LavenderFooter/>
+          <LavenderFooter />
+        </>
+      )}
+
+      {/* ✅ Individual Pages */}
+      {location.pathname === "/about" && (
+        <>
+          <About />
+          <LavenderFooter />
+        </>
+      )}
+
+      {location.pathname === "/products" && (
+        <>
+          <Products />
+          <LavenderFooter />
+        </>
+      )}
+
+      {location.pathname === "/gallery" && (
+        <>
+          <Gallery />
+          <LavenderFooter />
+        </>
+      )}
+
+      {location.pathname === "/contact" && (
+        <>
+          <Contact />
+          <LavenderFooter />
+        </>
+      )}
+
+      
     </div>
   );
 }

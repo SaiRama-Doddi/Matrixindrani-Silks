@@ -16,7 +16,7 @@ export default function Gallery() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-[#E6E6FA] to-[#D8BFD8] py-12 px-6 md:px-12">
+      <div className="mt-12 min-h-screen bg-gradient-to-b from-[#E6E6FA] to-[#D8BFD8] py-12 px-6 md:px-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-purple-800 mb-4">
             Image Gallery

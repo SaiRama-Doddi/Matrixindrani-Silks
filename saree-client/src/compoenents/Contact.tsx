@@ -59,7 +59,7 @@ export default function Contact() {
   };
 
   return (
-    <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-gradient-to-b from-[#E6E6FA] to-[#D8BFD8]">
+    <div className="mt-10 mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-gradient-to-b from-[#E6E6FA] to-[#D8BFD8]">
       {/* 🌸 Header */}
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-[#9370DB] to-[#BA55D3] bg-clip-text text-transparent">
