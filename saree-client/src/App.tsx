@@ -5,20 +5,26 @@ import { Layout } from "./compoenents/DashboardLayout";
 import { Login } from "./pages/Login";
 import { Sarees } from "./pages/SareeList";
 import CategoryForm from "./pages/CategoryList";
-import Home from "./pages/Home"; // ✅ Import your Home page
+import Home from "./pages/Home";
+import SareeDetails from "./pages/SareeDetails";
 
 function App() {
   return (
     <BrowserRouter>
+    
       <AuthProvider>
         <Routes>
-          {/* ✅ Public Routes */}
-          
-          <Route path="/" element={<Home  />} />
+          {/* ✅ All routes handled inside Home */}
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<Home />} />
+          <Route path="/gallery" element={<Home />} />
+          <Route path="/contact" element={<Home />} />
+          <Route path="/products" element={<Home />} />
+              <Route path="/saree/:id" element={<SareeDetails />} />
+
           <Route path="/login" element={<Login />} />
 
-
-          {/* ✅ Protected Admin Routes */}
+          {/* ✅ Admin Routes */}
           <Route
             path="/admin"
             element={
@@ -29,7 +35,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/admin/categories"
             element={
@@ -41,7 +46,7 @@ function App() {
             }
           />
 
-          {/* ✅ Redirect unknown paths */}
+          {/* Redirect unknown paths */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

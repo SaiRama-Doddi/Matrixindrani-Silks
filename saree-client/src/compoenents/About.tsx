@@ -2,7 +2,7 @@ import { Award, Heart, Users, Sparkles } from "lucide-react";
 
 export default function About() {
   return (
-    <div className="bg-gradient-to-b from-[#E6E6FA] to-[#D8BFD8] text-gray-800 py-16 px-6 md:px-12">
+    <div className="mt-10 bg-gradient-to-b from-[#E6E6FA] to-[#D8BFD8] text-gray-800 py-16 px-6 md:px-12">
       {/* 🌸 Title Section */}
       <div className="text-center mb-16">
         <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-700 to-purple-400 bg-clip-text text-transparent mb-4">
