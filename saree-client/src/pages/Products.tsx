@@ -43,30 +43,37 @@ export default function FrontendSarees() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const [catRes, sareeRes] = await Promise.all([
-        axios.get(`${API_URL}/api/categories`),
-        axios.get(`${API_URL}/api/sarees`),
-      ]);
+ const fetchData = async () => {
+  try {
+    setLoading(true);
+    console.log("Fetching from:", API_URL);
 
-      const categoriesData: Category[] = Array.isArray(catRes.data)
-        ? catRes.data
-        : catRes.data?.categories || [];
+    const [catRes, sareeRes] = await Promise.all([
+      axios.get(`${API_URL}/api/categories`),
+      axios.get(`${API_URL}/api/sarees`),
+    ]);
 
-      const sareesData: Saree[] = Array.isArray(sareeRes.data.sarees)
-        ? sareeRes.data.sarees
-        : [];
+    console.log("Categories Response:", catRes.data);
+    console.log("Sarees Response:", sareeRes.data);
 
-      setCategories(categoriesData);
-      setSarees(sareesData);
-    } catch (err) {
-      console.error(err);
-      setError('Failed to load data from server.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    const categoriesData: Category[] = Array.isArray(catRes.data)
+      ? catRes.data
+      : catRes.data?.categories || catRes.data?.data || [];
+
+    const sareesData: Saree[] = Array.isArray(sareeRes.data)
+      ? sareeRes.data
+      : sareeRes.data?.sarees || sareeRes.data?.data || [];
+
+    setCategories(categoriesData);
+    setSarees(sareesData);
+  } catch (err: any) {
+    console.error("Error fetching:", err.message || err);
+    setError("Failed to load data from server. Check console for details.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const filteredSarees =
     selectedCategoryId === 'All'

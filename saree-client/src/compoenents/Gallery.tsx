@@ -8,7 +8,7 @@ export default function Gallery() {
     "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
     "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
     "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree2_curetd.jpg",
-    "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762415569/red2_sfja1y.jpg",
+    "https://kalamandir.com/media/km/Banarasi01.jpg",
     "https://kalamandir.com/media/km/Banarasi01.jpg",
   ];
 

@@ -87,28 +87,7 @@ export default function LavenderFooter() {
               </button>
             </div>
 
-            <div className="mt-6">
-              <h4 className="font-semibold text-purple-800 border-b-2 border-purple-400 inline-block mb-2 text-sm">
-                We Accept
-              </h4>
-              <div className="flex items-center space-x-3 mt-2">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg"
-                  alt="Visa"
-                  className="h-6"
-                />
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Mastercard-logo.png"
-                  alt="MasterCard"
-                  className="h-6"
-                />
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/6/6b/UPI-Logo-vector.svg"
-                  alt="UPI"
-                  className="h-6"
-                />
-              </div>
-            </div>
+            
           </div>
         </div>
 
