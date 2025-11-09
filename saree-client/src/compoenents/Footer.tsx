@@ -17,11 +17,11 @@ export default function LavenderFooter() {
             </div>
             <div className="flex items-center space-x-2 text-purple-700 mb-2">
               <Phone className="w-5 h-5" />
-              <p className="text-lg font-semibold">+91 9852 9852 99</p>
+              <p className="text-lg font-semibold">+91 91217855422</p>
             </div>
             <div className="flex items-center space-x-2 mb-2">
               <Mail className="w-5 h-5 text-purple-700" />
-              <p className="text-sm">support@matrixindaranisilks.com</p>
+              <p className="text-sm">matrixindaranisilks@gmail.com</p>
             </div>
             <ul className="text-sm text-gray-600 space-y-1 mb-3">
               <li><a href="#" className="hover:text-purple-700">Track Your Order</a></li>

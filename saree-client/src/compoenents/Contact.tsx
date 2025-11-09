@@ -87,8 +87,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-[#4B0082] mb-1">Phone</h3>
-                  <p className="text-gray-700">+91 63031 30025</p>
-                  <p className="text-gray-700">+91 98765 43211</p>
+                  <p className="text-gray-700">+91 9121785422</p>
+                 {/*  <p className="text-gray-700">+91 98765 43211</p> */}
                 </div>
               </div>
 
@@ -98,8 +98,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-[#4B0082] mb-1">Email</h3>
-                  <p className="text-gray-700">info@matrixindaranisilks.com</p>
-                  <p className="text-gray-700">support@matrixindaranisilks.com</p>
+                  <p className="text-gray-700">matrixindaranisilks@gmail.com</p>
+               
                 </div>
               </div>
 
@@ -110,9 +110,9 @@ export default function Contact() {
                 <div>
                   <h3 className="font-semibold text-[#4B0082] mb-1">Address</h3>
                   <p className="text-gray-700">
-                    Matrixindarani Silks Store<br />
-                    Silk Market Street, Hyderabad<br />
-                    Telangana, India - 500001
+                    12/1,5th Floor<br />
+                    Honnurappa Lane, Siddanna Lane<br />
+                    Bangalore-560002
                   </p>
                 </div>
               </div>
