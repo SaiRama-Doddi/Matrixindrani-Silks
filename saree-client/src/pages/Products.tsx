@@ -40,7 +40,7 @@ export default function FrontendSarees() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCategories, setShowCategories] = useState(false);
-  const [showOverlay, setShowOverlay] = useState<string | null>(null); // for mobile click/tap
+  //const [showOverlay, setShowOverlay] = useState<string | null>(null); // for mobile click/tap
   const navigate = useNavigate();
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";

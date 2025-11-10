@@ -67,6 +67,8 @@ export function Sarees() {
     }
   };
 
+
+/*
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -102,6 +104,8 @@ export function Sarees() {
       setIsLoading(false);
     }
   };
+*/
+
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this saree?')) return;
