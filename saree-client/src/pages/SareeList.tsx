@@ -26,7 +26,7 @@ export function Sarees() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSaree, setEditingSaree] = useState<Saree | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
