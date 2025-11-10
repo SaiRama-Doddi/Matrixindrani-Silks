@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import SareeDetails from "./pages/SareeDetails";
 import Navbar from "./compoenents/Navbar";
 import Footer from "./compoenents/Footer";
+import CartPage from "./pages/CartPage";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/products" element={<Home />} />
           <Route path="/saree/:id" element={<SareeDetails />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/cart" element={<CartPage />} />
 
           {/* ✅ Admin Routes */}
           <Route

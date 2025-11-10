@@ -70,25 +70,20 @@ export default function LavenderFooter() {
 
           {/* Newsletter Section */}
           <div>
-            <h3 className="font-semibold text-lg text-purple-800 border-b-2 border-purple-400 inline-block mb-3">
-              Join Our Newsletter
-            </h3>
-            <p className="text-gray-600 text-sm mb-3">
-              Sign up for updates, new collections, and exclusive offers.
-            </p>
-            <div className="flex items-center">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full px-3 py-2 border border-purple-200 rounded-l-full focus:outline-none focus:ring-2 focus:ring-purple-400"
-              />
-              <button className="px-4 py-2 bg-purple-600 text-white rounded-r-full hover:bg-purple-700 transition">
-                Subscribe
-              </button>
-            </div>
+  <h3 className="font-semibold text-lg text-purple-800 border-b-2 border-purple-400 inline-block mb-3">
+    Our Address
+  </h3>
+  <p className="text-gray-600 text-sm mb-3">
+    Visit us at our store for the latest saree collections and special offers.
+  </p>
+  <div className=" p-4 text-gray-700">
+    <p className="font-medium">Matrix Indrani Silks</p>
+    <p>Exclusive Kanchivaram Sarees</p>
+    <p>12/1,5th Floor,Hannurappa Lane,Siddanna Lane,Bangalore - 560002</p>
+    <p className="mt-2 text-purple-700 font-semibold">📞 +91 9121785422</p>
+  </div>
+</div>
 
-            
-          </div>
         </div>
 
         {/* Bottom Section */}
@@ -124,5 +119,3 @@ export default function LavenderFooter() {
     </footer>
   );
 }
-
-/* Rama Prasanna Doing Some Matrix Project */

@@ -47,41 +47,17 @@ export default function Home() {
           <div id="contact-section">
             <Contact />
           </div>
-
-          <LavenderFooter />
         </>
       )}
 
       {/* ✅ Individual Pages */}
-      {location.pathname === "/about" && (
-        <>
-          <About />
-          <LavenderFooter />
-        </>
-      )}
+      {location.pathname === "/about" && <About />}
+      {location.pathname === "/products" && <Products />}
+      {location.pathname === "/gallery" && <Gallery />}
+      {location.pathname === "/contact" && <Contact />}
 
-      {location.pathname === "/products" && (
-        <>
-          <Products />
-          <LavenderFooter />
-        </>
-      )}
-
-      {location.pathname === "/gallery" && (
-        <>
-          <Gallery />
-          <LavenderFooter />
-        </>
-      )}
-
-      {location.pathname === "/contact" && (
-        <>
-          <Contact />
-          <LavenderFooter />
-        </>
-      )}
-
-      
+      {/* ✅ Single footer for all pages */}
+      <LavenderFooter />
     </div>
   );
 }

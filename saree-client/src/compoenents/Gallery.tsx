@@ -2,56 +2,96 @@ import { X } from "lucide-react";
 import { useState } from "react";
 
 export default function Gallery() {
-  // 🔹 Paste your image URLs here
+  // 🌸 Image pairs for flip/fade effect
   const images = [
-    "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree4_cpmhbz.jpg",
-    "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
-    "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
-    "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree2_curetd.jpg",
-    "https://kalamandir.com/media/km/Banarasi01.jpg",
-    "https://kalamandir.com/media/km/Banarasi01.jpg",
+    {
+      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree4_cpmhbz.jpg",
+      back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
+      name: "Lavender Silk Saree",
+    },
+    {
+      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree2_curetd.jpg",
+      back: "https://kalamandir.com/media/km/Banarasi01.jpg",
+      name: "Royal Banarasi Saree",
+    },
+    {
+      front: "https://kalamandir.com/media/km/Banarasi01.jpg",
+      back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
+      name: "Golden Glow Saree",
+    },
+    {
+      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
+      back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree2_curetd.jpg",
+      name: "Velvet Elegance Saree",
+    },
+    {
+      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree4_cpmhbz.jpg",
+      back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
+      name: "Lavender Silk Saree",
+    },
+    {
+      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree2_curetd.jpg",
+      back: "https://kalamandir.com/media/km/Banarasi01.jpg",
+      name: "Royal Banarasi Saree",
+    },
+    {
+      front: "https://kalamandir.com/media/km/Banarasi01.jpg",
+      back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
+      name: "Golden Glow Saree",
+    },
+    {
+      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
+      back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree2_curetd.jpg",
+      name: "Velvet Elegance Saree",
+    },
   ];
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-[#E6E6FA] to-[#D8BFD8] py-12 px-6 md:px-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-purple-800 mb-4">
-            Image Gallery
-          </h1>
-          <p className="text-purple-600 text-lg max-w-2xl mx-auto">
-            Discover elegant saree inspirations in our gallery — each design tells its own story.
+      <div className="w-full min-h-screen bg-gradient-to-b from-[#f8f5ff] to-[#e7defa] py-20 px-4 sm:px-8">
+        <div className="text-center mb-16">
+           <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-700 to-purple-400 bg-clip-text text-transparent mb-4">
+          Collection
+        </h1>
+          <p className="text-purple-600 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            Discover the elegance of tradition reimagined — where every saree tells a story of grace and artistry.
           </p>
         </div>
 
-        {/* 🌸 Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {images.map((image, index) => (
+        {/* 🌸 Premium Gallery Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {images.map((img, index) => (
             <div
               key={index}
-              onClick={() => setSelectedImage(image)}
-              className="relative group overflow-hidden rounded-2xl bg-white/60 backdrop-blur-sm border border-purple-200 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer"
+              onClick={() => setSelectedImage(img.front)}
+              className="relative group overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-700 cursor-pointer"
             >
+              {/* Front Image */}
               <img
-                src={image}
-                alt={`Gallery image ${index + 1}`}
-                className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-700"
+                src={img.front}
+                alt={img.name}
+                className="w-full h-[480px] object-cover rounded-3xl transition-opacity duration-700 group-hover:opacity-0"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-purple-700/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 group-hover:opacity-100 transition-all duration-500">
-                <p className="text-lg font-semibold">Lavender Dreams</p>
-                <p className="text-sm text-purple-100">
-                  Elegance, tradition & modern artistry.
-                </p>
+
+              {/* Back Image (shows on hover) */}
+              <img
+                src={img.back}
+                alt={`${img.name} alternate`}
+                className="absolute inset-0 w-full h-full object-cover rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+              />
+
+              {/* Bottom Label */}
+              <div className="absolute bottom-0 left-0 right-0 bg-linear-to-r from-purple-800 to-purple-600/90 text-white text-center py-4 text-lg font-semibold tracking-wide">
+                {img.name}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* 🌙 Lightbox (Popup) */}
+      {/* 🌙 Lightbox */}
       {selectedImage && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
@@ -59,7 +99,7 @@ export default function Gallery() {
         >
           <button
             onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 bg-purple-500/30 hover:bg-purple-500/50 text-white p-3 rounded-full transition-all z-10"
+            className="absolute top-6 right-6 bg-purple-500/40 hover:bg-purple-600 text-white p-3 rounded-full transition-all z-10"
             aria-label="Close lightbox"
           >
             <X className="w-6 h-6" />
@@ -68,7 +108,7 @@ export default function Gallery() {
           <img
             src={selectedImage}
             alt="Full view"
-            className="max-w-full max-h-[90vh] rounded-2xl shadow-2xl object-contain"
+            className="max-w-[90vw] max-h-[90vh] rounded-3xl shadow-2xl object-contain"
             onClick={(e) => e.stopPropagation()}
           />
         </div>

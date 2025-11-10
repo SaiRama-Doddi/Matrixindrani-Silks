@@ -296,204 +296,211 @@ export function Sarees() {
         </div>
       )}
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-xl max-w-2xl w-full my-8">
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {editingSaree ? 'Edit Saree' : 'Add Saree'}
-                </h2>
-                <button
-                  onClick={closeModal}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
+{isModalOpen && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-2xl shadow-xl w-full max-w-full sm:max-w-xl md:max-w-2xl flex flex-col max-h-[90vh] overflow-hidden">
+      
+      {/* Header (Sticky) */}
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl flex justify-between items-center z-10 shadow-sm">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+          {editingSaree ? "Edit Saree" : "Add Saree"}
+        </h2>
+        <button
+          onClick={closeModal}
+          className="p-2 hover:bg-gray-100 rounded-lg transition"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
 
-            <form onSubmit={handleSubmit} className="p-6">
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-                  {error}
-                </div>
-              )}
+      {/* Scrollable Body */}
+      <div className="overflow-y-auto px-6 py-6 space-y-6">
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Product Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.productName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, productName: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                    placeholder="Enter product name"
-                    required
-                  />
-                </div>
+        {/* Product Name + Category */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Product Name
+            </label>
+            <input
+              type="text"
+              value={formData.productName}
+              onChange={(e) =>
+                setFormData({ ...formData, productName: e.target.value })
+              }
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              placeholder="Enter product name"
+              required
+            />
+          </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category
-                  </label>
-                  <select
-                    value={formData.categoryId}
-                    onChange={(e) =>
-                      setFormData({ ...formData, categoryId: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                    required
-                  >
-                    <option value="">Select a category</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Price
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={(e) =>
-                        setFormData({ ...formData, price: e.target.value })
-                      }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="0.00"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Offer Price (Optional)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.offerPrice}
-                      onChange={(e) =>
-                        setFormData({ ...formData, offerPrice: e.target.value })
-                      }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="0.00"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Rating (Optional)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="5"
-                    value={formData.rating}
-                    onChange={(e) =>
-                      setFormData({ ...formData, rating: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                    placeholder="0.0 - 5.0"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Images (Max 3)
-                  </label>
-
-                  {editingSaree && existingImages.some((img) => img) && (
-                    <div className="mb-4">
-                      <p className="text-xs text-gray-600 mb-2">Current Images:</p>
-                      <div className="grid grid-cols-3 gap-4">
-                        {existingImages.map(
-                          (img, index) =>
-                            img && (
-                              <div key={index} className="relative group">
-                                <img
-                                  src={img}
-                                  alt={`Existing ${index + 1}`}
-                                  className="w-full h-32 object-cover rounded-lg"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => removeExistingImage(index)}
-                                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </div>
-                            )
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                  />
-
-                  {imagePreviews.length > 0 && (
-                    <div className="grid grid-cols-3 gap-4 mt-4">
-                      {imagePreviews.map((preview, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={preview}
-                            alt={`Preview ${index + 1}`}
-                            className="w-full h-32 object-cover rounded-lg"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeImage(index)}
-                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex space-x-3 mt-6 pt-6 border-t border-gray-200">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-                >
-                  {isLoading ? 'Saving...' : editingSaree ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Category
+            </label>
+            <select
+              value={formData.categoryId}
+              onChange={(e) =>
+                setFormData({ ...formData, categoryId: e.target.value })
+              }
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              required
+            >
+              <option value="">Select a category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-      )}
+
+        {/* Price + Offer Price */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Price
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              value={formData.price}
+              onChange={(e) =>
+                setFormData({ ...formData, price: e.target.value })
+              }
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              placeholder="0.00"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Offer Price (Optional)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              value={formData.offerPrice}
+              onChange={(e) =>
+                setFormData({ ...formData, offerPrice: e.target.value })
+              }
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              placeholder="0.00"
+            />
+          </div>
+        </div>
+
+        {/* Rating */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Rating (Optional)
+          </label>
+          <input
+            type="number"
+            step="0.1"
+            min="0"
+            max="5"
+            value={formData.rating}
+            onChange={(e) =>
+              setFormData({ ...formData, rating: e.target.value })
+            }
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            placeholder="0.0 - 5.0"
+          />
+        </div>
+
+        {/* Images */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Images (Max 3)
+          </label>
+
+          {editingSaree && existingImages.some((img) => img) && (
+            <div className="mb-4">
+              <p className="text-xs text-gray-600 mb-2">Current Images:</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {existingImages.map(
+                  (img, index) =>
+                    img && (
+                      <div key={index} className="relative group">
+                        <img
+                          src={img}
+                          alt={`Existing ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg shadow-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeExistingImage(index)}
+                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )
+                )}
+              </div>
+            </div>
+          )}
+
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          />
+
+          {imagePreviews.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+              {imagePreviews.map((preview, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={preview}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg shadow-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Sticky Footer */}
+      <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 flex flex-col md:flex-row gap-3 rounded-b-2xl shadow-inner">
+        <button
+          type="button"
+          onClick={closeModal}
+          className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50"
+        >
+          {isLoading ? "Saving..." : editingSaree ? "Update" : "Create"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
