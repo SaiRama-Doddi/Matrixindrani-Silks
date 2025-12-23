@@ -5,43 +5,43 @@ export default function Gallery() {
   // 🌸 Image pairs for flip/fade effect
   const images = [
     {
-      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree4_cpmhbz.jpg",
-      back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
+      front: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155188/WhatsApp_Image_2025-12-10_at_19.30.54_ed25ed03_l5c9ew.jpg",
+      back: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155191/WhatsApp_Image_2025-12-10_at_19.28.37_be77d900_ascvsk.jpg",
       name: "Lavender Silk Saree",
     },
     {
-      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree2_curetd.jpg",
-      back: "https://kalamandir.com/media/km/Banarasi01.jpg",
+      front: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155190/WhatsApp_Image_2025-12-10_at_19.28.37_d882b6c6_kvaft0.jpg",
+      back: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155190/WhatsApp_Image_2025-12-10_at_19.28.37_ba01f494_x2gdg5.jpg",
       name: "Royal Banarasi Saree",
     },
     {
-      front: "https://kalamandir.com/media/km/Banarasi01.jpg",
-      back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
+      front: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155190/WhatsApp_Image_2025-12-10_at_19.28.36_0f9d669e_gli8mi.jpg",
+      back: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155189/WhatsApp_Image_2025-12-10_at_19.28.38_0573c742_vswyrx.jpg",
       name: "Golden Glow Saree",
     },
     {
-      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
+      front: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155171/WhatsApp_Image_2025-12-10_at_19.28.39_0850aee2_royrsr.jpg",
       back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree2_curetd.jpg",
       name: "Velvet Elegance Saree",
     },
     {
-      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree4_cpmhbz.jpg",
+      front: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155186/WhatsApp_Image_2025-12-10_at_19.28.40_c957cb4a_ltfgdh.jpg",
       back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
       name: "Lavender Silk Saree",
     },
     {
-      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree2_curetd.jpg",
-      back: "https://kalamandir.com/media/km/Banarasi01.jpg",
+      front: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155188/WhatsApp_Image_2025-12-10_at_19.28.38_a414e355_uq8pv1.jpg",
+      back: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155188/WhatsApp_Image_2025-12-10_at_19.28.38_eaee624f_d5bxxp.jpg",
       name: "Royal Banarasi Saree",
     },
     {
-      front: "https://kalamandir.com/media/km/Banarasi01.jpg",
-      back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
+      front: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155188/WhatsApp_Image_2025-12-10_at_19.32.58_9808884e_pytvzl.jpg",
+      back: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155187/WhatsApp_Image_2025-12-10_at_19.28.38_8e5f37fb_msegvd.jpg",
       name: "Golden Glow Saree",
     },
     {
-      front: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree3_bb6o67.jpg",
-      back: "https://res.cloudinary.com/dt2byhqyh/image/upload/v1762434354/Saree2_curetd.jpg",
+      front: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155188/WhatsApp_Image_2025-12-10_at_19.28.39_817bb3ba_izursv.jpg",
+      back: "https://res.cloudinary.com/dd4oiwnep/image/upload/v1766155183/WhatsApp_Image_2025-12-10_at_19.28.39_814020c2_zfvykw.jpg",
       name: "Velvet Elegance Saree",
     },
   ];
